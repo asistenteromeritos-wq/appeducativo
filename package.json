@@ -1,0 +1,14 @@
+﻿{
+  "name": "school-app",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "mobile": "npm run start --workspace=@school/mobile",
+    "mobile:web": "npm run web --workspace=@school/mobile",
+    "typecheck:mobile": "npm run typecheck --workspace=@school/mobile"
+  }
+}
