@@ -1,4 +1,5 @@
-﻿{
+﻿
+{
   "name": "school-app",
   "version": "1.0.0",
   "private": true,
@@ -7,8 +8,9 @@
     "packages/*"
   ],
   "scripts": {
-    "mobile": "npm run start --workspace=@school/mobile",
-    "mobile:web": "npm run web --workspace=@school/mobile",
-    "typecheck:mobile": "npm run typecheck --workspace=@school/mobile"
+    "dev:mobile": "npm run start --workspace=apps/mobile",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "mobile:web": "npm run web --workspace=apps/mobile",
+    "typecheck:mobile": "npm run typecheck --workspace=apps/mobile"
   }
 }
