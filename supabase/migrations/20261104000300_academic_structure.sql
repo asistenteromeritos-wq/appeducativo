@@ -427,15 +427,18 @@ with check (
 
 -- HORARIOS
 
+
 create policy schedules_select_authorized
 on public.schedules
 for select to authenticated
 using (
   public.is_platform_admin()
+
   or public.has_institution_role(
     institution_id,
     array['administration']::public.membership_role[]
   )
+
   or exists (
     select 1
     from public.teachers t
@@ -443,7 +446,12 @@ using (
       and t.id = schedules.teacher_id
       and t.auth_user_id = (select auth.uid())
       and t.is_active = true
+      and public.has_institution_role(
+        schedules.institution_id,
+        array['teacher']::public.membership_role[]
+      )
   )
+
   or exists (
     select 1
     from public.students s
@@ -454,8 +462,13 @@ using (
       and s.section_id = schedules.section_id
       and s.is_active = true
       and sg.guardian_user_id = (select auth.uid())
+      and public.has_institution_role(
+        schedules.institution_id,
+        array['guardian']::public.membership_role[]
+      )
   )
 );
+
 
 create policy schedules_manage_admin
 on public.schedules
@@ -475,6 +488,105 @@ with check (
   )
 );
 
+create or replace function public.user_has_institution_role(
+  p_user_id uuid,
+  p_institution_id uuid,
+  p_role public.membership_role
+)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1
+    from public.memberships m
+    where m.user_id = p_user_id
+      and m.institution_id = p_institution_id
+      and m.role = p_role
+      and m.status = 'active'
+  );
+$$;
+
+-- Evitar que los usuarios invoquen directamente
+-- esta función para consultar membresías ajenas.
+revoke all on function public.user_has_institution_role(
+  uuid,
+  uuid,
+  public.membership_role
+) from public, anon, authenticated;
+
+-- VALIDAR QUE LA CUENTA ASOCIADA SEA DOCENTE ACTIVO
+
+create or replace function public.validate_teacher_membership()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  -- Permitir docentes sin cuenta vinculada.
+  if new.auth_user_id is not null then
+
+    if not public.user_has_institution_role(
+      new.auth_user_id,
+      new.institution_id,
+      'teacher'::public.membership_role
+    ) then
+      raise exception
+        'El usuario no tiene una membresía activa como docente en esta institución.'
+        using errcode = '23514';
+    end if;
+
+  end if;
+
+  return new;
+end;
+$$;
+
+revoke all on function public.validate_teacher_membership()
+from public, anon, authenticated;
+
+create trigger validate_teacher_membership_trigger
+before insert or update of institution_id, auth_user_id
+on public.teachers
+for each row
+execute function public.validate_teacher_membership();
+
+
+-- VALIDAR QUE LA CUENTA VINCULADA SEA APODERADO ACTIVO
+
+create or replace function public.validate_guardian_membership()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.user_has_institution_role(
+    new.guardian_user_id,
+    new.institution_id,
+    'guardian'::public.membership_role
+  ) then
+    raise exception
+      'El usuario no tiene una membresía activa como apoderado en esta institución.'
+      using errcode = '23514';
+  end if;
+
+  return new;
+end;
+$$;
+
+revoke all on function public.validate_guardian_membership()
+from public, anon, authenticated;
+
+create trigger validate_guardian_membership_trigger
+before insert or update of institution_id, guardian_user_id
+on public.student_guardians
+for each row
+execute function public.validate_guardian_membership();
+
 -- ------------------------------------------------------------
 -- 10. PRIVILEGIOS
 -- Las políticas RLS determinan qué filas puede operar cada rol.
@@ -488,7 +600,7 @@ grant select, insert, update on
   public.schedules
 to authenticated;
 
-grant select, insert, delete on
+grant select, insert, update, delete on
   public.student_guardians
 to authenticated;
 
