@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from './lib/supabase';
-type Screen = 'welcome' | 'login';
+type Screen = 'welcome' | 'login' | 'register' | 'affiliation';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('welcome');
@@ -22,6 +22,10 @@ export default function App() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // Datos para el registro
+  const [fullName, setFullName] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 
   const handleLogin = async () => {
@@ -50,6 +54,12 @@ export default function App() {
         Alert.alert(
           '¡Bienvenido!',
           'Tu sesión se inició correctamente.',
+          [
+            {
+              text: 'Continuar',
+              onPress: () => setScreen('affiliation'),
+            },
+          ]
         );
       }
     } catch (error) {
@@ -62,12 +72,112 @@ export default function App() {
     }
   };
 
-  const handleRecovery = () => {
+const handleRecovery = async () => {
+  if (!email.trim()) {
     Alert.alert(
       'Recuperar contraseña',
-      'La recuperación de contraseña se habilitará al conectar la autenticación.',
+      'Ingresa tu correo electrónico para recibir el enlace de recuperación.'
     );
-  };
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      email.trim()
+    );
+
+    if (error) {
+      Alert.alert('Error', error.message);
+      return;
+    }
+
+    Alert.alert(
+      'Solicitud enviada',
+      'Si el correo está registrado, recibirás instrucciones para recuperar tu contraseña.'
+    );
+  } catch (error) {
+    Alert.alert(
+      'Error de conexión',
+      'No fue posible solicitar la recuperación de contraseña.'
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  
+const handleRegister = async () => {
+  if (!fullName.trim() || !email.trim() || !password || !confirmPassword) {
+    Alert.alert(
+      'Datos incompletos',
+      'Completa todos los campos para continuar.'
+    );
+    return;
+  }
+
+  if (password.length < 6) {
+    Alert.alert(
+      'Contraseña inválida',
+      'La contraseña debe tener al menos 6 caracteres.'
+    );
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    Alert.alert(
+      'Contraseñas diferentes',
+      'Las contraseñas ingresadas no coinciden.'
+    );
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          full_name: fullName.trim(),
+        },
+      },
+    });
+
+    if (error) {
+      Alert.alert('Error de registro', error.message);
+      return;
+    }
+
+    if (data.session) {
+      Alert.alert(
+        '¡Cuenta creada!',
+        'Tu registro se realizó correctamente.'
+      );
+    } else {
+      Alert.alert(
+        '¡Registro realizado!',
+        'Revisa tu correo electrónico para confirmar tu cuenta.'
+      );
+    }
+
+    setFullName('');
+    setPassword('');
+    setConfirmPassword('');
+    setScreen('login');
+
+  } catch (error) {
+    Alert.alert(
+      'Error de conexión',
+      'No fue posible conectar con Supabase.'
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -167,7 +277,7 @@ export default function App() {
                 Una comunicación más cercana entre el colegio y tu familia.
               </Text>
             </View>
-          ) : (
+          ) : screen === 'login' ? (
             <View style={styles.loginContainer}>
               <TouchableOpacity
                 style={styles.backButton}
@@ -265,11 +375,232 @@ export default function App() {
                 </Text>
               </View>
 
+              
+              <Text style={styles.loginFooter}>
+                COMUNIDAD ESCOLAR
+              </Text>
+              <TouchableOpacity
+                onPress={() => setScreen('register')}
+                style={{ marginTop: 20, alignItems: 'center' }}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.recoveryText}>
+                  ¿No tienes cuenta? Crear cuenta
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : screen === 'affiliation' ? (
+            <View style={{
+              flex: 1,
+              padding: 25,
+              justifyContent: 'center',
+              backgroundColor: '#F5F7FB',
+            }}>
+              <TouchableOpacity
+                onPress={() => setScreen('login')}
+                style={{ marginBottom: 35 }}
+              >
+                <Text style={{ fontSize: 18, color: '#2563EB' }}>
+                  ‹ Volver
+                </Text>
+              </TouchableOpacity>
+
+              <Text style={{
+                fontSize: 28,
+                fontWeight: 'bold',
+                color: '#1E293B',
+                marginBottom: 12,
+              }}>
+                Afiliarme a mi colegio
+              </Text>
+
+              <Text style={{
+                fontSize: 16,
+                color: '#64748B',
+                marginBottom: 30,
+              }}>
+                Ingresa el código de afiliación que te proporcionó tu colegio.
+              </Text>
+
+              <TextInput
+                placeholder="Código de afiliación"
+                placeholderTextColor="#94A3B8"
+                autoCapitalize="characters"
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderWidth: 1,
+                  borderColor: '#CBD5E1',
+                  borderRadius: 12,
+                  padding: 16,
+                  fontSize: 16,
+                  marginBottom: 20,
+                }}
+              />
+
+              <TouchableOpacity
+                onPress={() => Alert.alert(
+                  'Afiliación',
+                  'La validación del código estará disponible próximamente.'
+                )}
+                style={{
+                  backgroundColor: '#2563EB',
+                  padding: 17,
+                  borderRadius: 12,
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{
+                  color: '#FFFFFF',
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                }}>
+                  Continuar
+                </Text>
+              </TouchableOpacity>
+            </View>
+            ) : (
+            <View style={styles.loginContainer}>
+
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => setScreen('login')}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.backButtonText}>‹</Text>
+                <Text style={styles.backLabel}>Volver al inicio de sesión</Text>
+              </TouchableOpacity>
+
+              <View style={styles.loginHeader}>
+                <View style={styles.loginLogo}>
+                  <Text style={styles.logoText}>CE</Text>
+                </View>
+
+                <Text style={styles.loginTitle}>
+                  Crear una cuenta
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setScreen('login')}
+                  style={{ marginTop: 25, alignItems: 'center' }}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.recoveryText}>
+                    ¿Ya tienes cuenta? Inicia sesión
+                  </Text>
+                </TouchableOpacity>
+
+                <Text style={styles.loginDescription}>
+                  Regístrate para conectarte con la comunidad de tu colegio.
+                </Text>
+              </View>
+
+              <View style={styles.form}>
+                <Text style={styles.inputLabel}>Nombres y apellidos</Text>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputIcon}>👤</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ingresa tus nombres completos"
+                    placeholderTextColor="#9CA8B8"
+                    value={fullName}
+                    onChangeText={setFullName}
+                    autoCapitalize="words"
+                  />
+                </View>
+
+                <Text style={styles.inputLabel}>Correo electrónico</Text>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputIcon}>✉</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="ejemplo@correo.com"
+                    placeholderTextColor="#9CA8B8"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+
+                <Text style={styles.inputLabel}>Contraseña</Text>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputIcon}>🔒</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Mínimo 6 caracteres"
+                    placeholderTextColor="#9CA8B8"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    <Text style={styles.showPassword}>
+                      {showPassword ? 'Ocultar' : 'Ver'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <Text style={styles.inputLabel}>Confirmar contraseña</Text>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputIcon}>🔐</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Repite tu contraseña"
+                    placeholderTextColor="#9CA8B8"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry={!showConfirmPassword}
+                    autoCapitalize="none"
+                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      setShowConfirmPassword(!showConfirmPassword)
+                    }
+                  >
+                    <Text style={styles.showPassword}>
+                      {showConfirmPassword ? 'Ocultar' : 'Ver'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  activeOpacity={0.85}
+                  onPress={handleRegister}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.primaryButtonText}>
+                    {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
+                  </Text>
+                  <Text style={styles.buttonArrow}>→</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.securityNote}>
+                <Text style={styles.securityIcon}>🛡️</Text>
+                <Text style={styles.securityText}>
+                  Tus datos personales se mantienen protegidos.
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                onPress={() => setScreen('login')}
+                style={{ marginTop: 25, alignItems: 'center' }}
+              >
+                <Text style={styles.recoveryText}>
+                  ¿Ya tienes cuenta? Inicia sesión
+                </Text>
+              </TouchableOpacity>
+
               <Text style={styles.loginFooter}>
                 COMUNIDAD ESCOLAR
               </Text>
             </View>
           )}
+
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
