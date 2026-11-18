@@ -25,6 +25,7 @@ export default function App() {
   // Datos para el registro
   const [fullName, setFullName] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [affiliationCode, setAffiliationCode] = useState('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 
@@ -426,6 +427,8 @@ const handleRegister = async () => {
                 placeholder="Código de afiliación"
                 placeholderTextColor="#94A3B8"
                 autoCapitalize="characters"
+                value={affiliationCode}
+                onChangeText={setAffiliationCode}
                 style={{
                   backgroundColor: '#FFFFFF',
                   borderWidth: 1,
@@ -438,10 +441,27 @@ const handleRegister = async () => {
               />
 
               <TouchableOpacity
-                onPress={() => Alert.alert(
-                  'Afiliación',
-                  'La validación del código estará disponible próximamente.'
-                )}
+                onPress={() => {
+                  if (!affiliationCode.trim()) {
+                    Alert.alert(
+                      'Código requerido',
+                      'Ingresa tu código de afiliación.'
+                    );
+                    return;
+                  }
+
+                  if (affiliationCode.trim().toLowerCase() === 'prueba123') {
+                    Alert.alert(
+                      '¡Código correcto!',
+                      'El código de afiliación es válido.'
+                    );
+                  } else {
+                    Alert.alert(
+                      'Código incorrecto',
+                      'El código ingresado no es válido.'
+                    );
+                  }
+                }}
                 style={{
                   backgroundColor: '#2563EB',
                   padding: 17,
@@ -454,7 +474,7 @@ const handleRegister = async () => {
                   fontSize: 16,
                   fontWeight: 'bold',
                 }}>
-                  Continuar
+                  Continuar 
                 </Text>
               </TouchableOpacity>
             </View>
