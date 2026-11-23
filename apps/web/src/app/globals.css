@@ -2417,3 +2417,134 @@ textarea {
     font-size: 23px;
   }
 }
+
+.users-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.users-create-button {
+  border: none;
+  border-radius: 9px;
+  padding: 11px 16px;
+  background: #4059d6;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.users-create-button:hover {
+  background: #3048bd;
+}
+
+.users-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, .55);
+}
+
+.users-modal {
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 25px;
+  border-radius: 15px;
+  background: white;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+
+.users-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.users-modal-header h2 {
+  margin: 0 0 6px;
+  color: #172033;
+}
+
+.users-modal-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.users-modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 7px;
+  background: #f1f5f9;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.users-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.users-modal form label {
+  margin-top: 8px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.users-modal form input,
+.users-modal form select {
+  width: 100%;
+  height: 43px;
+  padding: 0 12px;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  outline: none;
+  background: white;
+  color: #334155;
+}
+
+.users-modal form input:focus,
+.users-modal form select:focus {
+  border-color: #4059d6;
+}
+
+.users-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.users-cancel-button {
+  padding: 10px 15px;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  background: white;
+  color: #475569;
+  cursor: pointer;
+}
+
+.users-modal-actions button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .users-header-actions {
+    width: 100%;
+  }
+
+  .users-modal {
+    padding: 18px;
+  }
+}

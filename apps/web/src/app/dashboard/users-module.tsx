@@ -35,7 +35,70 @@ export default function UsersModule() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [institutionFilter, setInstitutionFilter] = useState('all');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [creating, setCreating] = useState(false);
 
+  const [newUser, setNewUser] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    password: '',
+    institution_id: '',
+    role: 'teacher',
+  });
+    const createUser = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    setCreating(true);
+    setError('');
+    setMessage('');
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      if (!token) {
+        throw new Error('Tu sesión ha expirado. Inicia sesión nuevamente.');
+      }
+
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'No se pudo crear el usuario.');
+      }
+
+      setMessage('Usuario creado correctamente.');
+      setNewUser({
+        full_name: '',
+        email: '',
+        phone: '',
+        password: '',
+        institution_id: '',
+        role: 'teacher',
+      });
+
+      setShowCreateForm(false);
+      await loadUsers();
+
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Ocurrió un error al crear el usuario.'
+      );
+    } finally {
+      setCreating(false);
+    }
+  };
   const loadUsers = useCallback(async () => {
     setLoading(true);
     setError('');
@@ -248,15 +311,139 @@ export default function UsersModule() {
             pertenecientes a las instituciones.
           </p>
         </div>
-
         <button
+            className="users-create-button"
+            onClick={() => setShowCreateForm(true)}
+          >
+            + Crear usuario
+        </button>
+        <button
+        
           className="users-refresh"
           onClick={loadUsers}
           disabled={loading}
         >
           ↻ Actualizar
         </button>
+
       </div>
+
+  {showCreateForm && (
+    <div className="users-modal-overlay">
+      <div className="users-modal">
+        <div className="users-modal-header">
+          <div>
+            <h2>Crear nuevo usuario</h2>
+            <p>Registra una cuenta y asígnala a una institución.</p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowCreateForm(false)}
+            className="users-modal-close"
+          >
+            ×
+          </button>
+        </div>
+
+        <form onSubmit={createUser}>
+          <label>Nombres y apellidos *</label>
+          <input
+            required
+            value={newUser.full_name}
+            onChange={(e) =>
+              setNewUser({ ...newUser, full_name: e.target.value })
+            }
+            placeholder="Nombre completo"
+          />
+
+          <label>Correo electrónico *</label>
+          <input
+            required
+            type="email"
+            value={newUser.email}
+            onChange={(e) =>
+              setNewUser({ ...newUser, email: e.target.value })
+            }
+            placeholder="usuario@correo.com"
+          />
+
+          <label>Teléfono</label>
+          <input
+            type="tel"
+            value={newUser.phone}
+            onChange={(e) =>
+              setNewUser({ ...newUser, phone: e.target.value })
+            }
+            placeholder="Número de teléfono"
+          />
+
+          <label>Contraseña temporal *</label>
+          <input
+            required
+            type="password"
+            minLength={8}
+            value={newUser.password}
+            onChange={(e) =>
+              setNewUser({ ...newUser, password: e.target.value })
+            }
+            placeholder="Mínimo 8 caracteres"
+          />
+
+          <label>Institución *</label>
+          <select
+            value={newUser.institution_id}
+            onChange={(e) =>
+              setNewUser({
+                ...newUser,
+                institution_id: e.target.value,
+              })
+            }
+            required
+          >
+            <option value="">Seleccionar institución</option>
+
+            {institutions.map((institution) => (
+              <option key={institution.id} value={institution.id}>
+                {institution.name}
+              </option>
+            ))}
+          </select>
+
+          <label>Rol del usuario *</label>
+          <select
+            value={newUser.role}
+            onChange={(e) =>
+              setNewUser({ ...newUser, role: e.target.value })
+            }
+          >
+            <option value="administration">Administración</option>
+            <option value="teacher">Docente</option>
+            <option value="guardian">Apoderado</option>
+          </select>
+
+          <div className="users-modal-actions">
+            <button
+              type="button"
+              className="users-cancel-button"
+              onClick={() => setShowCreateForm(false)}
+              disabled={creating}
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              className="users-create-button"
+              disabled={creating}
+            >
+              {creating ? 'Creando...' : 'Crear usuario'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )}
 
       <div className="users-stats">
         <article className="users-stat-card">
