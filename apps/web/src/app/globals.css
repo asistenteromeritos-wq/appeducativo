@@ -2548,3 +2548,590 @@ textarea {
     padding: 18px;
   }
 }
+/* =========================================
+   MÓDULO DE ALUMNOS
+========================================= */
+
+.students-module {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.students-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.students-eyebrow {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 7px;
+}
+
+.students-header h2 {
+  color: #172033;
+  font-size: 25px;
+  font-weight: 750;
+  margin: 0;
+}
+
+.students-header p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 7px 0 0;
+}
+
+.students-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.students-refresh,
+.students-create-button {
+  border: none;
+  border-radius: 9px;
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.students-refresh {
+  color: #334155;
+  background: #f1f5f9;
+}
+
+.students-refresh:hover {
+  background: #e2e8f0;
+}
+
+.students-create-button {
+  color: white;
+  background: #2563eb;
+}
+
+.students-create-button:hover {
+  background: #1d4ed8;
+}
+
+.students-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.students-stat-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 13px;
+  padding: 20px;
+}
+
+.students-stat-card h3 {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.students-stat-card strong {
+  color: #172033;
+  font-size: 27px;
+  font-weight: 750;
+}
+
+.students-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.students-toolbar input,
+.students-toolbar select {
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid #dbe1e8;
+  border-radius: 8px;
+  background: white;
+  color: #334155;
+  font-size: 13px;
+  outline: none;
+}
+
+.students-toolbar input {
+  flex: 1;
+  min-width: 220px;
+}
+
+.students-toolbar select:focus,
+.students-toolbar input:focus {
+  border-color: #3b82f6;
+}
+
+.students-table-container {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 13px;
+  overflow: hidden;
+}
+
+.students-table-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+}
+
+.students-table-heading h3 {
+  color: #172033;
+  font-size: 16px;
+  margin: 0;
+}
+
+.students-table-heading span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.students-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.students-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 750px;
+}
+
+.students-table th {
+  background: #f8fafc;
+  color: #64748b;
+  text-align: left;
+  padding: 13px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.students-table td {
+  padding: 14px 16px;
+  color: #334155;
+  font-size: 13px;
+  border-top: 1px solid #eef2f7;
+}
+
+.students-person {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 190px;
+}
+
+.students-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 750;
+  flex-shrink: 0;
+}
+
+.students-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.students-status.status-active {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.students-status.status-inactive {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.students-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.students-edit-button,
+.students-action {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+.students-edit-button {
+  color: #2563eb;
+}
+
+.students-edit-button:hover {
+  background: #eff6ff;
+}
+
+.students-action.deactivate {
+  color: #dc2626;
+}
+
+.students-action.activate {
+  color: #15803d;
+}
+
+.students-empty {
+  text-align: center;
+  padding: 35px 15px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.students-alert {
+  padding: 12px 15px;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.students-alert-error {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+.students-alert-success {
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+}
+
+/* Ventana de creación y edición */
+
+.students-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+  overflow-y: auto;
+}
+
+.students-modal {
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 15px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.students-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.students-modal-header h3 {
+  color: #172033;
+  font-size: 19px;
+  margin: 0;
+}
+
+.students-modal-close {
+  border: none;
+  background: #f1f5f9;
+  color: #475569;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.students-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.students-modal-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 11px 17px;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.students-modal-actions .students-cancel {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.students-modal-actions .students-save {
+  background: #2563eb;
+  color: white;
+}
+
+/* Adaptación para móviles */
+
+@media (max-width: 768px) {
+  .students-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .students-header {
+    align-items: flex-start;
+  }
+
+  .students-header-actions {
+    width: 100%;
+  }
+
+  .students-header-actions button {
+    flex: 1;
+  }
+
+  .students-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .students-toolbar input,
+  .students-toolbar select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .students-modal {
+    padding: 18px;
+  }
+}
+
+/* FORMULARIO MODERNO DE ALUMNOS */
+
+.students-modal-modern {
+  width: min(760px, 94vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 28px;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.students-form-eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.students-modal-modern .students-modal-header {
+  margin-bottom: 26px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e8edf3;
+}
+
+.students-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.students-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.students-form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.students-form-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.students-form-section-title h3 {
+  margin: 0 0 4px;
+  color: #172033;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.students-form-section-title p {
+  margin: 0;
+  color: #8993a4;
+  font-size: 12px;
+}
+
+.students-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.students-form-group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.students-form-full {
+  grid-column: 1 / -1;
+}
+
+.students-form-group label {
+  color: #344054;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.students-form-group input,
+.students-form-group select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid #dce2ea;
+  border-radius: 9px;
+  outline: none;
+  background: #ffffff;
+  color: #263244;
+  font-size: 13px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.students-form-group input:focus,
+.students-form-group select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.students-form-group input:disabled,
+.students-form-group select:disabled {
+  cursor: not-allowed;
+  background: #f3f5f8;
+  color: #9aa3b2;
+}
+
+.students-form-group small {
+  color: #8993a4;
+  font-size: 11px;
+}
+
+.students-modal-modern .students-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 5px;
+  padding-top: 20px;
+  border-top: 1px solid #e8edf3;
+}
+
+.students-modal-modern .students-save,
+.students-modal-modern .students-cancel-button {
+  min-height: 43px;
+  padding: 0 20px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.students-modal-modern .students-save {
+  border: none;
+  background: #2563eb;
+  color: white;
+}
+
+.students-modal-modern .students-save:hover {
+  background: #1d4ed8;
+}
+
+.students-modal-modern .students-cancel-button {
+  border: 1px solid #dce2ea;
+  background: white;
+  color: #475467;
+}
+
+.students-modal-modern button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .students-modal-modern {
+    width: 96vw;
+    max-height: 95vh;
+    padding: 19px;
+  }
+
+  .students-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .students-form-full {
+    grid-column: auto;
+  }
+
+  .students-modal-modern .students-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .students-modal-modern .students-modal-actions button {
+    width: 100%;
+  }
+}

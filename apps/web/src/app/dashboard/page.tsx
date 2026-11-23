@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import UsersModule from './users-module';
 import { supabase } from '../../lib/supabase';
 import InstitutionsModule from './institutions-module';
+import StudentsModule from './students-module';
+import GradesSectionsModule from './grades-sections-module';
 
 type Section = {
   id: string;
@@ -49,6 +51,13 @@ const sections: Section[] = [
     title: 'Alumnos',
     description: 'Consultar estudiantes de las instituciones',
     group: 'GESTIÓN',
+  },
+  {
+  id: 'grados-secciones',
+  icon: '📚',
+  title: 'Grados y Secciones',
+  description: 'Administrar grados y secciones por institución',
+  group: 'GESTIÓN',
   },
   {
     id: 'usuarios',
@@ -522,10 +531,14 @@ export default function DashboardPage() {
                 </div>
               </section>
             </>
-          ) : activeSection === 'instituciones' ? (
-            <InstitutionsModule />
-          ) : activeSection === 'usuarios' ? (
-            <UsersModule />
+            ) : activeSection === 'instituciones' ? (
+              <InstitutionsModule />
+            ) : activeSection === 'alumnos' ? (
+              <StudentsModule />
+            ) : activeSection === 'grados-secciones' ? (
+            <GradesSectionsModule />
+            ) : activeSection === 'usuarios' ? (
+              <UsersModule />
             ) : (
             <section className="module-placeholder">
                 <div className="placeholder-icon">{selectedSection.icon}</div>
