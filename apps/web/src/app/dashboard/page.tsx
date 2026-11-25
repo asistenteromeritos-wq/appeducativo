@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase';
 import InstitutionsModule from './institutions-module';
 import StudentsModule from './students-module';
 import GradesSectionsModule from './grades-sections-module';
+import SubjectsModule from './subjects-module';
 
 type Section = {
   id: string;
@@ -57,6 +58,13 @@ const sections: Section[] = [
   icon: '📚',
   title: 'Grados y Secciones',
   description: 'Administrar grados y secciones por institución',
+  group: 'GESTIÓN',
+  },
+  {
+  id: 'asignaturas',
+  icon: '📖',
+  title: 'Asignaturas',
+  description: 'Administrar el catálogo de asignaturas por institución',
   group: 'GESTIÓN',
   },
   {
@@ -539,6 +547,8 @@ export default function DashboardPage() {
             <GradesSectionsModule />
             ) : activeSection === 'usuarios' ? (
               <UsersModule />
+            ) : activeSection === 'asignaturas' ? (
+              <SubjectsModule />
             ) : (
             <section className="module-placeholder">
                 <div className="placeholder-icon">{selectedSection.icon}</div>
